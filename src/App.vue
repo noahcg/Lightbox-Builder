@@ -1,11 +1,13 @@
 <template>
-  <div id="app">
+  <div id="app" class="container">
+    <h1>Lightbox Builder</h1>
     <BasicForm />
   </div>
 </template>
 
 <script>
 import BasicForm from './components/BasicForm.vue'
+
 
 export default {
   name: 'app',
@@ -22,6 +24,5 @@ export default {
   -moz-osx-font-smoothing: grayscale;
   color: #2c3e50;
   margin-top: 60px;
-  padding: 0 20px;
 }
 </style>

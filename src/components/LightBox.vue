@@ -1,5 +1,5 @@
 <template>
-  <div id="giving-tuesday" class="overlay">
+  <div id="giving-tuesday" class="container overlay">
     <div class="popup">
         <div class="row">
             <div class="col-sm-8 col-xs-12 left-content"> <img class="popup1-image" src="images/Lightbox_Image_For_Test.jpg"> </div>
