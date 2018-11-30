@@ -3,10 +3,10 @@
     <b-form class="col-md-12">
 
       <b-form-group id="exampleInputGroup1" label="Do you need a title?" label-for="toggleTitle">
-        <toggle-button id="toggleTitle" @change="disabled = (disabled + 1) % 2" :value="false" :labels="{checked: 'Yes', unchecked: 'No'}" />
+        <toggle-button id="toggleTitle" @change="disabled = !disabled" :value="false" :labels="{checked: 'Yes', unchecked: 'No'}" />
         <label class="sr-only" for="inlineFormInputName2">Lightbox Title</label>
         <b-input-group class="mb-md-4">
-          <b-form-input :maxlength="maxTitle" id="inlineFormInputName2" placeholder="Title" v-model="lbTitle" :disabled="disabled == 0 ? true : false"></b-form-input>
+          <b-form-input :maxlength="maxTitle" id="inlineFormInputName2" placeholder="Title" v-model="lbTitle" :disabled="disabled"></b-form-input>
           <b-input-group-text slot="append">
             <strong v-text="(maxTitle - lbTitle.length)"></strong>
           </b-input-group-text>
@@ -35,8 +35,7 @@
       <form enctype="multipart/form-data" novalidate v-if="isInitial || isSaving">
         <p>Choose An Image</p>
         <div class="dropbox mb-md-4">
-          <input type="file" multiple :name="uploadFieldName" :disabled="isSaving" @change="filesChange($event.target.name, $event.target.files); fileCount = $event.target.files.length"
-            accept="image/*" class="input-file">
+          <input type="file" :disabled="isSaving" accept="image/*" class="input-file" @change="filesChange">
             <p v-if="isInitial">
               Drag your file(s) here to begin<br> or click to browse
             </p>
@@ -48,15 +47,10 @@
 
       <!--SUCCESS-->
       <div v-if="isSuccess">
-        <p>Uploaded {{ uploadedFiles.length }} file(s) successfully.</p>
+        <p>Uploaded image successfully.</p>
         <p>
           <a href="javascript:void(0)" @click="reset()">Upload again</a>
         </p>
-        <ul class="list-unstyled">
-          <li v-for="item in uploadedFiles">
-            <img :src="item.url" class="img-responsive img-thumbnail" :alt="item.originalName">
-          </li>
-        </ul>
       </div>
       <!--FAILED-->
       <div v-if="isFailed">
@@ -69,6 +63,7 @@
 
       <!-- Dates -->
       <p>What date(s) should the lightbox run?</p>
+      <date-picker v-model="dateRange" type="datetime" lang="en" format="YYYY-MM-DD hh:mm:ss a" range confirm :time-picker-options="{ start: '00:00', step: '00:15', end: '23:45' }"/>
 
       <!-- Cookie -->
       <p>Does the lightbox need a cookie?</p>
@@ -85,7 +80,7 @@
 
     </b-form>
 
-    <LightBox :title="lbTitle" :cta="lbCTA" :text="lbText" :button="lbButton" :buttonLink="lbButtonLink" />
+    <LightBox :title="lbTitle" :cta="lbCTA" :text="lbText" :button="lbButton" :buttonLink="lbButtonLink" :imageUrl="imageUrl" />
   </div>
 </template>
 
@@ -93,6 +88,7 @@
 
 import { serverBus } from '../main';
 import LightBox from './LightBox.vue';
+import DatePicker from 'vue2-datepicker';
 // import { upload } from '../file-upload.service';
 import { upload } from '../file-upload.fake.service';
 
@@ -101,7 +97,8 @@ const STATUS_INITIAL = 0, STATUS_SAVING = 1, STATUS_SUCCESS = 2, STATUS_FAILED =
 export default {
   name: 'BasicForm',
   components: {
-    LightBox
+    LightBox,
+    DatePicker,
   },
   data() {
     return { 
@@ -113,20 +110,14 @@ export default {
       lbText: '',
       lbButton: '',
       lbButtonLink: '',
-      disabled: 0,
+      disabled: true,
       uploadedFiles: [],
       uploadError: null,
       currentStatus: null,
-      uploadFieldName: 'photos',
-      isActive: false
-    }
-  },
-  watch: {
-    sendData: function () {
-      serverBus.$emit('test', this.title);
-      serverBus.$emit('test', this.text);
-      serverBus.$emit('test', this.button);
-      serverBus.$emit('test', this.buttonLink);
+      isActive: false,
+      imageFile: null,
+      imageUrl: '',
+      dateRange: null,
     }
   },
   computed: {
@@ -164,25 +155,17 @@ export default {
           this.currentStatus = STATUS_FAILED;
         });
     },
-    filesChange(fieldName, fileList) {
-      // handle file changes
-      const formData = new FormData();
-
-      if (!fileList.length) return;
-
-      // append the files to FormData
-      Array
-        .from(Array(fileList.length).keys())
-        .map(x => {
-          formData.append(fieldName, fileList[x], fileList[x].name);
-        });
-
-      // save it
-      this.save(formData);
+    filesChange($event) {
+      let image = $event.target.files[0];
+      let reader = new FileReader();
+      reader.onload = (event) => {
+        this.imageUrl = event.target.result;
+      }
+      reader.readAsDataURL(image);
     },
     toggleURLField() {
       this.isActive = !this.isActive
-    }
+    },
   },
   mounted() {
     this.reset();

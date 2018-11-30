@@ -2,7 +2,7 @@
   <div id="giving-tuesday" class="container overlay">
     <div class="popup">
         <div class="row">
-            <div class="col-sm-8 col-xs-12 left-content"> <img class="popup1-image" src="images/Lightbox_Image_For_Test.jpg"> </div>
+            <div class="col-sm-8 col-xs-12 left-content"> <img class="popup1-image" :src="imageUrl"> </div>
             <div class="col-sm-4 col-xs-12 right-content"> <a class="close" href="#">&times;</a>
                 <div class="right-content-inner">
                     <h2>{{ title }}</h2>
@@ -21,27 +21,10 @@ import { serverBus } from '../main';
 
 export default {
   name: 'LightBox',
-  props: ['title', 'cta', 'text', 'button', 'buttonLink'],
+  props: ['title', 'cta', 'text', 'button', 'buttonLink', 'imageUrl'],
   data() {    
-    return { 
-      lbTitle: this.$props.title,
-      lbCTA: this.$props.cta,
-      lbText: this.$props.text,
-      lbButton: this.$props.button,
-      lbButtonLink: this.$props.buttonLink
-    }
+    return {}
   },
-  watch: {
-    collectData: function () {
-      serverBus.$on('test', (title, cta, text, button, buttonLink) => {
-        this.title = title;
-        this.cta = cta;
-        this.text = text;
-        this.button = button;
-        this.buttonLink = buttonLink;
-      });
-    }
-  }
 }
 </script>
 
