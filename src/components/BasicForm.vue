@@ -31,7 +31,7 @@
       </b-input-group>
 
       <form enctype="multipart/form-data" novalidate v-if="isInitial || isSaving">
-        <p>Upload An Image</p>
+        <p>Choose An Image</p>
         <div class="dropbox mb-md-4">
           <input type="file" multiple :name="uploadFieldName" :disabled="isSaving" @change="filesChange($event.target.name, $event.target.files); fileCount = $event.target.files.length"
             accept="image/*" class="input-file">
@@ -46,7 +46,7 @@
 
       <!--SUCCESS-->
       <div v-if="isSuccess">
-        <h2>Uploaded {{ uploadedFiles.length }} file(s) successfully.</h2>
+        <p>Uploaded {{ uploadedFiles.length }} file(s) successfully.</p>
         <p>
           <a href="javascript:void(0)" @click="reset()">Upload again</a>
         </p>
@@ -58,7 +58,7 @@
       </div>
       <!--FAILED-->
       <div v-if="isFailed">
-        <h2>Uploaded failed.</h2>
+        <p>Uploaded failed.</p>
         <p>
           <a href="javascript:void(0)" @click="reset()">Try again</a>
         </p>
@@ -67,8 +67,14 @@
 
       <!-- Dates -->
       <p>What date(s) should the lightbox run?</p>
-      <vue-rangedate-picker></vue-rangedate-picker>
+      <p>Do you need a cookie?</p>
+      <toggle-button id="toggleCookie" :value="false" :labels="{checked: 'Yes', unchecked: 'No'}" />
 
+      <p>Does this lightbox need to show up on a page other than the home page?</p>
+      <toggle-button id="toggleURL" @change="toggleURLField()" :value="false" :labels="{checked: 'Yes', unchecked: 'No'}" />
+
+      <label class="sr-only" for="inlineFormInputName6">URL</label>
+      <b-form-input class="mb-md-4" id="inlineFormInputName6" placeholder="URL" v-show="isActive"></b-form-input>
     </b-form>
 
     <LightBox :title="lbTitle" :cta="lbCTA" :text="lbText" :button="lbButton" />
@@ -79,6 +85,7 @@
 
 import { serverBus } from '../main';
 import LightBox from './LightBox.vue';
+import moment from 'moment';
 // import { upload } from '../file-upload.service';
 import { upload } from '../file-upload.fake.service';
 
@@ -102,7 +109,8 @@ export default {
       uploadedFiles: [],
       uploadError: null,
       currentStatus: null,
-      uploadFieldName: 'photos'
+      uploadFieldName: 'photos',
+      isActive: false
     }
   },
   watch: {
@@ -162,6 +170,9 @@ export default {
 
       // save it
       this.save(formData);
+    },
+    toggleURLField() {
+      this.isActive = !this.isActive
     }
   },
   mounted() {
