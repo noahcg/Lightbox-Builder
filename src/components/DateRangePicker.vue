@@ -1,7 +1,5 @@
 <template>
-  <date-range-picker 
-        
-    >
+  <date-range-picker>
     <!--Optional scope for the input displaying the dates -->
     <div slot="input" >...</div>
   </date-range-picker>

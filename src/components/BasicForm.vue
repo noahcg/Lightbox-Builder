@@ -1,9 +1,8 @@
 <template>
   <div class="row">
     <b-form class="col-md-12">
-      <b-form-group id="exampleInputGroup1"
-                    label="Do you need a title?"
-                    label-for="toggleTitle">
+
+      <b-form-group id="exampleInputGroup1" label="Do you need a title?" label-for="toggleTitle">
         <toggle-button id="toggleTitle" @change="disabled = (disabled + 1) % 2" :value="false" :labels="{checked: 'Yes', unchecked: 'No'}" />
         <label class="sr-only" for="inlineFormInputName2">Lightbox Title</label>
         <b-input-group class="mb-md-4">
@@ -67,14 +66,20 @@
 
       <!-- Dates -->
       <p>What date(s) should the lightbox run?</p>
-      <p>Do you need a cookie?</p>
+
+      <!-- Cookie -->
+      <p>Does the lightbox need a cookie?</p>
       <toggle-button id="toggleCookie" :value="false" :labels="{checked: 'Yes', unchecked: 'No'}" />
 
-      <p>Does this lightbox need to show up on a page other than the home page?</p>
-      <toggle-button id="toggleURL" @change="toggleURLField()" :value="false" :labels="{checked: 'Yes', unchecked: 'No'}" />
+      <!-- URL -->
+      <p>Should the lightbox show up on the homepage?</p>
+      <toggle-button id="toggleHomepage" :value="false" :labels="{checked: 'Yes', unchecked: 'No'}" />
 
+      <p>Does the lightbox need to show up on any other page(s)?</p>
+      <toggle-button id="toggleURL" @change="toggleURLField()" :value="false" :labels="{checked: 'Yes', unchecked: 'No'}" />
       <label class="sr-only" for="inlineFormInputName6">URL</label>
       <b-form-input class="mb-md-4" id="inlineFormInputName6" placeholder="URL" v-show="isActive"></b-form-input>
+
     </b-form>
 
     <LightBox :title="lbTitle" :cta="lbCTA" :text="lbText" :button="lbButton" />
@@ -85,7 +90,6 @@
 
 import { serverBus } from '../main';
 import LightBox from './LightBox.vue';
-import moment from 'moment';
 // import { upload } from '../file-upload.service';
 import { upload } from '../file-upload.fake.service';
 
