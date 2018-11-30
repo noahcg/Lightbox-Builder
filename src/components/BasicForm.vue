@@ -59,6 +59,7 @@
           <a href="javascript:void(0)" @click="reset()">Try again</a>
         </p>
         <pre>{{ uploadError }}</pre>
+        
       </div>
 
       <!-- Dates -->
