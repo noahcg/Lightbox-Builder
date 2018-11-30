@@ -29,6 +29,9 @@
         </b-input-group-text>
       </b-input-group>
 
+      <label class="sr-only" for="buttonLinkInput">Lightbox Button Link</label>
+      <b-form-input class="mb-md-4" id="buttonLinkInput" placeholder="Button Link" v-model="lbButtonLink"></b-form-input>
+
       <form enctype="multipart/form-data" novalidate v-if="isInitial || isSaving">
         <p>Choose An Image</p>
         <div class="dropbox mb-md-4">
@@ -82,7 +85,7 @@
 
     </b-form>
 
-    <LightBox :title="lbTitle" :cta="lbCTA" :text="lbText" :button="lbButton" />
+    <LightBox :title="lbTitle" :cta="lbCTA" :text="lbText" :button="lbButton" :buttonLink="lbButtonLink" />
   </div>
 </template>
 
@@ -109,6 +112,7 @@ export default {
       lbCTA: '',
       lbText: '',
       lbButton: '',
+      lbButtonLink: '',
       disabled: 0,
       uploadedFiles: [],
       uploadError: null,
@@ -122,6 +126,7 @@ export default {
       serverBus.$emit('test', this.title);
       serverBus.$emit('test', this.text);
       serverBus.$emit('test', this.button);
+      serverBus.$emit('test', this.buttonLink);
     }
   },
   computed: {

@@ -7,7 +7,7 @@
                 <div class="right-content-inner">
                     <h2>{{ title }}</h2>
                     <div class="content right-inner">{{ text }}</div>
-                    <div class="calltoaction-btn"> <a href="" class="cta-btn" target="_blank">{{ button }}</a> </div>
+                    <div class="calltoaction-btn"> <a :href="buttonLink" class="cta-btn" target="_blank">{{ button }}</a> </div>
                 </div>
             </div>
         </div>
@@ -21,22 +21,24 @@ import { serverBus } from '../main';
 
 export default {
   name: 'LightBox',
-  props: ['title', 'cta', 'text', 'button'],
+  props: ['title', 'cta', 'text', 'button', 'buttonLink'],
   data() {    
     return { 
       lbTitle: this.$props.title,
       lbCTA: this.$props.cta,
       lbText: this.$props.text,
-      lbButton: this.$props.button
+      lbButton: this.$props.button,
+      lbButtonLink: this.$props.buttonLink
     }
   },
   watch: {
     collectData: function () {
-      serverBus.$on('test', (title, cta, text, button) => {
+      serverBus.$on('test', (title, cta, text, button, buttonLink) => {
         this.title = title;
         this.cta = cta;
         this.text = text;
         this.button = button;
+        this.buttonLink = buttonLink;
       });
     }
   }
