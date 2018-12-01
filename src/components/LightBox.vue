@@ -1,5 +1,5 @@
 <template>
-  <div id="giving-tuesday" class="container overlay">
+  <div id="giving-tuesday" class="container overlay mt-4">
     <div class="popup">
         <div class="row">
             <div class="col-sm-8 col-xs-12 left-content"> <img class="popup1-image" :src="imageUrl"> </div>
@@ -37,7 +37,7 @@ export default {
   left: 0;
   right: 0;
   transition: opacity 500ms;
-  z-index: 9999;
+  /* z-index: 9999; */
   padding: 30px;
   }
 

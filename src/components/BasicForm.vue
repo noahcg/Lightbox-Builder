@@ -5,7 +5,7 @@
       <b-form-group id="exampleInputGroup1" label="Do you need a title?" label-for="toggleTitle">
         <toggle-button id="toggleTitle" @change="disabled = !disabled" :value="false" :labels="{checked: 'Yes', unchecked: 'No'}" />
         <label class="sr-only" for="inlineFormInputName2">Lightbox Title</label>
-        <b-input-group class="mb-md-4">
+        <b-input-group class="mb-4">
           <b-form-input :maxlength="maxTitle" id="inlineFormInputName2" placeholder="Title" v-model="lbTitle" :disabled="disabled"></b-form-input>
           <b-input-group-text slot="append">
             <strong v-text="(maxTitle - lbTitle.length)"></strong>
@@ -14,15 +14,21 @@
       </b-form-group>
       
       <label class="sr-only" for="inlineFormInputName4">Lightbox Text</label>
-      <b-input-group class="mb-md-4">
-        <b-form-input :maxlength="maxText" id="inlineFormInputName4" placeholder="Text" v-model="lbText"></b-form-input>
+      <!-- <b-input-group class="mb-4">
+        <b-form-input :maxlength="maxText" id="inlineFormInputName4" placeholder="Text" ></b-form-input>
         <b-input-group-text slot="append">
           <strong v-text="(maxText - lbText.length)"></strong>
         </b-input-group-text>
-      </b-input-group>
+      </b-input-group> -->
+
+      <editor id="editor" api-key="API_KEY" :init="{
+                                  plugins: 'wordcount',
+                                  selector: 'editor',
+                                  element_format: 'text'
+                                }" v-model="lbText"></editor>
       
       <label class="sr-only" for="inlineFormInputName5">Lightbox Button</label>
-      <b-input-group class="mb-md-4">
+      <b-input-group class="mb-4 mt-4">
         <b-form-input :maxlength="maxButton" id="inlineFormInputName5" placeholder="Button" v-model="lbButton"></b-form-input>
         <b-input-group-text slot="append">
           <strong v-text="(maxButton - lbButton.length)"></strong>
@@ -30,11 +36,14 @@
       </b-input-group>
 
       <label class="sr-only" for="buttonLinkInput">Lightbox Button Link</label>
-      <b-form-input class="mb-md-4" id="buttonLinkInput" placeholder="Button Link" v-model="lbButtonLink"></b-form-input>
+      <b-form-input class="mb-4" id="buttonLinkInput" placeholder="Button Link" v-model="lbButtonLink"></b-form-input>
 
       <form enctype="multipart/form-data" novalidate v-if="isInitial || isSaving">
-        <p>Choose An Image</p>
-        <div class="dropbox mb-md-4">
+        <p>Choose An Image 
+          <br />
+          <small>Your image should be 500px x 480px, or that aspect ratio</small>
+        </p>
+        <div class="dropbox mb-4">
           <input type="file" :disabled="isSaving" accept="image/*" class="input-file" @change="filesChange">
             <p v-if="isInitial">
               Drag your file(s) here to begin<br> or click to browse
@@ -64,7 +73,7 @@
 
       <!-- Dates -->
       <p>What date(s) should the lightbox run?</p>
-      <date-picker v-model="dateRange" type="datetime" lang="en" format="YYYY-MM-DD hh:mm:ss a" range confirm :time-picker-options="{ start: '00:00', step: '00:15', end: '23:45' }"/>
+      <date-picker class="mb-4" v-model="dateRange" type="datetime" lang="en" format="YYYY-MM-DD hh:mm:ss a" range confirm :time-picker-options="{ start: '00:00', step: '00:15', end: '23:45' }"/>
 
       <!-- Cookie -->
       <p>Does the lightbox need a cookie?</p>
@@ -75,23 +84,21 @@
       <toggle-button id="toggleHomepage" :value="false" :labels="{checked: 'Yes', unchecked: 'No'}" />
 
       <p>Does the lightbox need to show up on any other page(s)?</p>
-      <toggle-button id="toggleURL" @change="toggleURLField()" :value="false" :labels="{checked: 'Yes', unchecked: 'No'}" />
+      <toggle-button id="toggleURL" @change="isActive = !isActive" :value="false" :labels="{checked: 'Yes', unchecked: 'No'}" />
       <label class="sr-only" for="inlineFormInputName6">URL</label>
-      <b-form-input class="mb-md-4" id="inlineFormInputName6" placeholder="URL" v-show="isActive"></b-form-input>
+      <b-form-input class="mb-4" id="inlineFormInputName6" placeholder="URL" v-show="isActive"></b-form-input>
 
     </b-form>
 
-    <LightBox :title="lbTitle" :cta="lbCTA" :text="lbText" :button="lbButton" :buttonLink="lbButtonLink" :imageUrl="imageUrl" />
+    <LightBox :title="disabled? '' : lbTitle" :cta="lbCTA" :text="lbText" :button="lbButton" :buttonLink="lbButtonLink" :imageUrl="imageUrl" />
   </div>
 </template>
 
 <script>
 
-import { serverBus } from '../main';
 import LightBox from './LightBox.vue';
 import DatePicker from 'vue2-datepicker';
-// import { upload } from '../file-upload.service';
-import { upload } from '../file-upload.fake.service';
+import Editor from '@tinymce/tinymce-vue';
 
 const STATUS_INITIAL = 0, STATUS_SAVING = 1, STATUS_SUCCESS = 2, STATUS_FAILED = 3;
 
@@ -100,6 +107,7 @@ export default {
   components: {
     LightBox,
     DatePicker,
+    Editor
   },
   data() {
     return { 
@@ -108,7 +116,7 @@ export default {
       maxButton: 15,
       lbTitle: '',
       lbCTA: '',
-      lbText: '',
+      lbText: 'a bunch of words here yo',
       lbButton: '',
       lbButtonLink: '',
       disabled: true,
@@ -164,12 +172,19 @@ export default {
       }
       reader.readAsDataURL(image);
     },
-    toggleURLField() {
-      this.isActive = !this.isActive
-    },
+    testWords() {
+      // console.log(tinymce);
+      var new_value = tinymce.get('editor').getContent(self.value);
+      console.log(tinymce.activeEditor.selection.getContent({format: 'text'}));
+      
+            // set model value
+            // self.set(new_value)
+      
+    }
   },
   mounted() {
     this.reset();
+    this.testWords();
   }
 }
 </script>
