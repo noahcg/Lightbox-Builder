@@ -6,7 +6,7 @@
             <div class="col-sm-4 col-xs-12 right-content"> <a class="close" href="#">&times;</a>
                 <div class="right-content-inner">
                     <h2>{{ title }}</h2>
-                    <div class="content right-inner">{{ text }}</div>
+                    <div class="content right-inner" v-html="text"></div>
                     <div class="calltoaction-btn"> <a :href="buttonLink" class="cta-btn" target="_blank">{{ button }}</a> </div>
                 </div>
             </div>
@@ -16,8 +16,6 @@
 </template>
 
 <script>
-
-import { serverBus } from '../main';
 
 export default {
   name: 'LightBox',

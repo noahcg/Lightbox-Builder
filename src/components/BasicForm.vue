@@ -13,29 +13,24 @@
         </b-input-group>
       </b-form-group>
       
-      <label class="sr-only" for="inlineFormInputName4">Lightbox Text</label>
+      <label for="inlineFormInputName4">Lightbox Text</label>
       <!-- <b-input-group class="mb-4">
         <b-form-input :maxlength="maxText" id="inlineFormInputName4" placeholder="Text" ></b-form-input>
         <b-input-group-text slot="append">
           <strong v-text="(maxText - lbText.length)"></strong>
         </b-input-group-text>
       </b-input-group> -->
-
-      <editor id="editor" api-key="API_KEY" :init="{
-                                  plugins: 'wordcount',
-                                  selector: 'editor',
-                                  element_format: 'text'
-                                }" v-model="lbText"></editor>
+      <tinymce class="mb-4" id="d1" v-model="lbText"></tinymce>
       
-      <label class="sr-only" for="inlineFormInputName5">Lightbox Button</label>
-      <b-input-group class="mb-4 mt-4">
+      <label for="inlineFormInputName5">Lightbox Button</label>
+      <b-input-group class="mb-4">
         <b-form-input :maxlength="maxButton" id="inlineFormInputName5" placeholder="Button" v-model="lbButton"></b-form-input>
         <b-input-group-text slot="append">
           <strong v-text="(maxButton - lbButton.length)"></strong>
         </b-input-group-text>
       </b-input-group>
 
-      <label class="sr-only" for="buttonLinkInput">Lightbox Button Link</label>
+      <label for="buttonLinkInput">Lightbox Button Link</label>
       <b-form-input class="mb-4" id="buttonLinkInput" placeholder="Button Link" v-model="lbButtonLink"></b-form-input>
 
       <form enctype="multipart/form-data" novalidate v-if="isInitial || isSaving">
@@ -98,7 +93,7 @@
 
 import LightBox from './LightBox.vue';
 import DatePicker from 'vue2-datepicker';
-import Editor from '@tinymce/tinymce-vue';
+import tinymce from './TinymceVue';
 
 const STATUS_INITIAL = 0, STATUS_SAVING = 1, STATUS_SUCCESS = 2, STATUS_FAILED = 3;
 
@@ -107,7 +102,7 @@ export default {
   components: {
     LightBox,
     DatePicker,
-    Editor
+    tinymce
   },
   data() {
     return { 
@@ -116,7 +111,7 @@ export default {
       maxButton: 15,
       lbTitle: '',
       lbCTA: '',
-      lbText: 'a bunch of words here yo',
+      lbText: '',
       lbButton: '',
       lbButtonLink: '',
       disabled: true,
@@ -172,19 +167,9 @@ export default {
       }
       reader.readAsDataURL(image);
     },
-    testWords() {
-      // console.log(tinymce);
-      var new_value = tinymce.get('editor').getContent(self.value);
-      console.log(tinymce.activeEditor.selection.getContent({format: 'text'}));
-      
-            // set model value
-            // self.set(new_value)
-      
-    }
   },
   mounted() {
     this.reset();
-    this.testWords();
   }
 }
 </script>
