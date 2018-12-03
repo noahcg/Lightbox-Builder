@@ -60,8 +60,8 @@ export default {
   name: 'tinymce',
   props: { 
     id : {
-        type : String,
-        required : true
+      type : String,
+      required : true
     },
     htmlClass : { default : '', type : String},
     value : { default : '' },
@@ -80,90 +80,90 @@ export default {
     readonly: { default: false, type: Boolean }
   },
   data(){
-      return {
-          content : '',
-          editor : null,
-          cTinyMce : null,
-          checkerTimeout: null,
-          isTyping : false
-      }; 
+    return {
+      content : '',
+      editor : null,
+      cTinyMce : null,
+      checkerTimeout: null,
+      isTyping : false
+    }; 
   },
   mounted(){
-      this.content = this.value;
-      this.init();  
+    this.content = this.value;
+    this.init();  
   },
   beforeDestroy () {
-      this.editor.destroy();
+    this.editor.destroy();
   },
   watch: {
-      value : function (newValue){
-          if(!this.isTyping){
-              if(this.editor !== null)
-                  this.editor.setContent(newValue);
-              else
-                  this.content = newValue;
-          }
-      },
-      readonly(value){
-          if(value){
-              this.editor.setMode('readonly');
-          } else {
-              this.editor.setMode('design');
-          }
+    value : function (newValue){
+      if(!this.isTyping){
+        if(this.editor !== null)
+          this.editor.setContent(newValue);
+        else
+          this.content = newValue;
       }
+    },
+    readonly(value){
+      if(value){
+        this.editor.setMode('readonly');
+      } else {
+        this.editor.setMode('design');
+      }
+    }
   },
   methods: {
-      init(){
-        let options = {
-          selector: '#' + this.id,
-          skin: false,
-          toolbar1: this.toolbar1,
-          toolbar2: this.toolbar2,
-          plugins: this.plugins,
-          menubar: false,
-          init_instance_callback : this.initEditor
-        };
-        tinymce.init(this.concatAssciativeArrays(options, this.other_options));
-      },
-      initEditor(editor) {
-        this.editor = editor;
-        editor.on('KeyUp', () => {
+    init(){
+      let options = {
+        selector: '#' + this.id,
+        skin: false,
+        toolbar1: this.toolbar1,
+        toolbar2: this.toolbar2,
+        plugins: this.plugins,
+        menubar: false,
+        init_instance_callback : this.initEditor
+      };
+      tinymce.init(this.concatAssciativeArrays(options, this.other_options));
+    },
+    initEditor(editor) {
+      this.editor = editor;
+      editor.on('KeyUp', () => {
+        this.submitNewContent();
+      });
+      editor.on('Change', (e) => {
+        if(this.editor.getContent() !== this.value){
           this.submitNewContent();
-        });
-        editor.on('Change', (e) => {
-          if(this.editor.getContent() !== this.value){
-            this.submitNewContent();
-          }
-          this.$emit('editorChange', e);
-        });
-        editor.on('init', () => {
-          editor.setContent(this.content);
-          this.$emit('input', this.content);
-        });
-        if(this.readonly){
-          this.editor.setMode('readonly');
-        } else {
-          this.editor.setMode('design');
         }
-        this.$emit('editorInit', editor);
-      },
-      concatAssciativeArrays(array1, array2){
-        if(array2.length === 0) return array1;
-        if(array1.length === 0) return array2;
-        let dest = [];
-        for ( let key in array1) dest[key] = array1[key];
-        for ( let key in array2) dest[key] = array2[key];
-        return dest;
-      },
-      submitNewContent(){
-        this.isTyping = true;
-        if(this.checkerTimeout !== null)
-          clearTimeout(this.checkerTimeout);
-          this.checkerTimeout = setTimeout(()=>{
-            this.isTyping = false;
-          }, 300);
-        this.$emit('input', this.editor.getContent());
+        this.$emit('editorChange', e);
+      });
+      editor.on('init', () => {
+        editor.setContent(this.content);
+        this.$emit('input', this.content);
+      });
+      if(this.readonly){
+        this.editor.setMode('readonly');
+      } else {
+        this.editor.setMode('design');
       }
+      this.$emit('editorInit', editor);
+    },
+    concatAssciativeArrays(array1, array2){
+      if(array2.length === 0) return array1;
+      if(array1.length === 0) return array2;
+      let dest = [];
+      for ( let key in array1) dest[key] = array1[key];
+      for ( let key in array2) dest[key] = array2[key];
+      return dest;
+    },
+    submitNewContent(){
+      this.isTyping = true;
+      if(this.checkerTimeout !== null)
+        clearTimeout(this.checkerTimeout);
+        this.checkerTimeout = setTimeout(()=>{
+          this.isTyping = false;
+        }, 300);
+      this.$emit('input', this.editor.getContent());
+    }
   }
 }
 </script>

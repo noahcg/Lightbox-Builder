@@ -14,12 +14,6 @@
       </b-form-group>
       
       <label for="inlineFormInputName4">Lightbox Text</label>
-      <!-- <b-input-group class="mb-4">
-        <b-form-input :maxlength="maxText" id="inlineFormInputName4" placeholder="Text" ></b-form-input>
-        <b-input-group-text slot="append">
-          <strong v-text="(maxText - lbText.length)"></strong>
-        </b-input-group-text>
-      </b-input-group> -->
       <tinymce class="mb-4" id="d1" v-model="lbText"></tinymce>
       
       <label for="inlineFormInputName5">Lightbox Button</label>
@@ -72,7 +66,7 @@
 
       <!-- Cookie -->
       <p>Does the lightbox need a cookie?</p>
-      <toggle-button id="toggleCookie" :value="false" :labels="{checked: 'Yes', unchecked: 'No'}" />
+      <toggle-button id="toggleCookie" @change="setCookie" :value="false" :labels="{checked: 'Yes', unchecked: 'No'}" />
 
       <!-- URL -->
       <p>Should the lightbox show up on the homepage?</p>
@@ -167,6 +161,16 @@ export default {
       }
       reader.readAsDataURL(image);
     },
+    setCookie() {
+      let cookieButton = document.getElementById('toggleCookie');
+      if (cookieButton.getAttribute('aria-checked') == 'true') {
+        this.$cookies.set('x', 'y', '1d');
+      } else {
+        this.$cookies.remove('x');
+      }
+      
+      console.log(this.$cookies.get('x'));
+    }
   },
   mounted() {
     this.reset();
