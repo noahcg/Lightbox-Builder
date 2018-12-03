@@ -1,14 +1,23 @@
 <template>
-  <date-range-picker>
-    <!--Optional scope for the input displaying the dates -->
-    <div slot="input" >...</div>
-  </date-range-picker>
+  <div>
+    <date-time-picker :model.sync="start"/>
+    <date-time-picker :model.sync="end"/>
+  </div>
 </template>
 
 <script>
-
+import DateTimePicker from 'vue-datetime-picker';
 export default {
-  name: 'DateRangePicker'
+  name: 'DateRangePicker',
+  components: [
+    DateTimePicker
+  ],
+  data() {
+    return {
+      start: null,
+      end: null,
+    }
+  }
 }
 </script>
 
