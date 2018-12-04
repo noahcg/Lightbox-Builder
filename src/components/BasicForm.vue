@@ -1,6 +1,6 @@
 <template>
   <div class="row">
-    <b-form class="col-md-12">
+    <b-form class="col-md-8">
 
       <b-form-group id="exampleInputGroup1" label="Do you need a title?" label-for="toggleTitle">
         <toggle-button id="toggleTitle" @change="disabled = !disabled" :value="false" :labels="{checked: 'Yes', unchecked: 'No'}" />
@@ -14,9 +14,9 @@
       </b-form-group>
       
       <label for="inlineFormInputName4">Lightbox Text</label>
-      <tinymce class="mb-4" id="d1" v-model="lbText"></tinymce>
+      <editor class="mb-4" id="d1" v-model="lbText" :init="init"></editor>
       
-      <label for="inlineFormInputName5">Lightbox Button</label>
+      <label class="mt-4" for="inlineFormInputName5">Lightbox Button</label>
       <b-input-group class="mb-4">
         <b-form-input :maxlength="maxButton" id="inlineFormInputName5" placeholder="Button" v-model="lbButton"></b-form-input>
         <b-input-group-text slot="append">
@@ -57,16 +57,16 @@
           <a href="javascript:void(0)" @click="reset()">Try again</a>
         </p>
         <pre>{{ uploadError }}</pre>
-        
       </div>
 
-      <!-- Dates -->
+      <h3 class="mb-4 mt-5">Lightbox Settings</h3>
+
       <p>What date(s) should the lightbox run?</p>
       <date-picker class="mb-4" v-model="dateRange" type="datetime" lang="en" format="YYYY-MM-DD hh:mm:ss a" range confirm :time-picker-options="{ start: '00:00', step: '00:15', end: '23:45' }"/>
 
       <!-- Cookie -->
       <p>Does the lightbox need a cookie?</p>
-      <toggle-button id="toggleCookie" @change="setCookie" :value="false" :labels="{checked: 'Yes', unchecked: 'No'}" />
+      <toggle-button id="toggleCookie" v-model="hasCookie" :labels="{checked: 'Yes', unchecked: 'No'}" />
 
       <!-- URL -->
       <p>Should the lightbox show up on the homepage?</p>
@@ -78,7 +78,15 @@
       <b-form-input class="mb-4" id="inlineFormInputName6" placeholder="URL" v-show="isActive"></b-form-input>
 
     </b-form>
-
+    <b-col class="col-md-4">
+      <div class="confirmation" v-show="hasSettings">
+        <h5>Confirm Your Lightbox Settings</h5>
+        <p v-show="hasDateRange"><strong>You want the lightbox to start running on:</strong> <br /> {{ displayDate(dateRange[0]) }}</p>
+        <p v-show="hasDateRange"><strong>And you want the lightbox to stop running on:</strong> <br /> {{ displayDate(dateRange[1]) }}</p>
+        <p v-show="hasCookie"><strong>Should a cookie be set?:</strong> {{ hasCookie ? 'Yes' : 'No' }}</p>
+        <b-button type="submit" variant="primary">Submit</b-button>
+      </div>
+    </b-col>
     <LightBox :title="disabled? '' : lbTitle" :cta="lbCTA" :text="lbText" :button="lbButton" :buttonLink="lbButtonLink" :imageUrl="imageUrl" />
   </div>
 </template>
@@ -87,7 +95,8 @@
 
 import LightBox from './LightBox.vue';
 import DatePicker from 'vue2-datepicker';
-import tinymce from './TinymceVue';
+import Editor from '@tinymce/tinymce-vue';
+import moment from 'moment';
 
 const STATUS_INITIAL = 0, STATUS_SAVING = 1, STATUS_SUCCESS = 2, STATUS_FAILED = 3;
 
@@ -96,7 +105,7 @@ export default {
   components: {
     LightBox,
     DatePicker,
-    tinymce
+    'editor': Editor
   },
   data() {
     return { 
@@ -115,7 +124,23 @@ export default {
       isActive: false,
       imageFile: null,
       imageUrl: '',
-      dateRange: null,
+      dateRange: [
+        null,
+        null,
+      ],
+      printStartDate: '',
+      printEndDate: '',
+      hasCookie: false,
+      init: {
+        plugins: [
+          'advlist autolink lists link image charmap print preview anchor textcolor wordcount',
+          'searchreplace visualblocks code fullscreen',
+          'insertdatetime media table contextmenu paste code directionality template colorpicker textpattern'
+        ],
+        menubar: false,
+        toolbar1: 'undo redo | code | bold italic strikethrough | forecolor backcolor | link | bullist numlist | removeformat',
+        branding: false
+      }
     }
   },
   computed: {
@@ -130,7 +155,13 @@ export default {
     },
     isFailed() {
       return this.currentStatus === STATUS_FAILED;
-    }
+    },
+    hasSettings() {
+      return this.hasDateRange || this.hasCookie;
+    },
+    hasDateRange() {
+      return this.dateRange[0] && this.dateRange[1];
+    },
   },
   methods: {
     reset() {
@@ -161,16 +192,9 @@ export default {
       }
       reader.readAsDataURL(image);
     },
-    setCookie() {
-      let cookieButton = document.getElementById('toggleCookie');
-      if (cookieButton.getAttribute('aria-checked') == 'true') {
-        this.$cookies.set('x', 'y', '1d');
-      } else {
-        this.$cookies.remove('x');
-      }
-      
-      console.log(this.$cookies.get('x'));
-    }
+    displayDate: function(date) {
+      return moment(date).format("dddd, MMMM Do YYYY, h:mm a");
+    },
   },
   mounted() {
     this.reset();
@@ -180,6 +204,9 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style lang="scss" scoped>
+h1 {
+  position: sticky;
+}
 .dropbox {
     outline: 2px dashed grey; /* the dash box */
     outline-offset: -10px;
@@ -207,5 +234,20 @@ export default {
     font-size: 1.2em;
     text-align: center;
     padding: 50px 0;
+  }
+
+  .confirmation {
+    background: #ccc;
+    color: #000;
+    padding: 20px;
+    position: relative;
+  }
+
+  @media (min-width: 768px) {
+   .confirmation {
+      position: -webkit-sticky;
+      position: sticky;
+      top: 20px;
+    } 
   }
 </style>
