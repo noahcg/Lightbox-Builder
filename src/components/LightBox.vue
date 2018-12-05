@@ -1,5 +1,5 @@
 <template>
-  <div id="giving-tuesday" class="container overlay mt-4">
+  <div id="giving-tuesday" class="overlay mt-4">
     <div class="popup">
         <div class="row">
             <div class="col-sm-8 col-xs-12 left-content"> <img class="popup1-image" :src="imageUrl"> </div>

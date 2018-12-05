@@ -1,92 +1,103 @@
 <template>
-  <div class="row">
-    <b-form class="col-md-8">
+  <div>
+    <div class="container">
+      <div class="row">
+        <b-form class="col-md-8 formContainer">
+          <h1>Lightbox Builder</h1>
 
-      <b-form-group id="exampleInputGroup1" label="Do you need a title?" label-for="toggleTitle">
-        <toggle-button id="toggleTitle" @change="disabled = !disabled" :value="false" :labels="{checked: 'Yes', unchecked: 'No'}" />
-        <label class="sr-only" for="inlineFormInputName2">Lightbox Title</label>
-        <b-input-group class="mb-4">
-          <b-form-input :maxlength="maxTitle" id="inlineFormInputName2" placeholder="Title" v-model="lbTitle" :disabled="disabled"></b-form-input>
-          <b-input-group-text slot="append">
-            <strong v-text="(maxTitle - lbTitle.length)"></strong>
-          </b-input-group-text>
-        </b-input-group>
-      </b-form-group>
-      
-      <label for="inlineFormInputName4">Lightbox Text</label>
-      <editor class="mb-4" id="d1" v-model="lbText" :init="init"></editor>
-      
-      <label class="mt-4" for="inlineFormInputName5">Lightbox Button</label>
-      <b-input-group class="mb-4">
-        <b-form-input :maxlength="maxButton" id="inlineFormInputName5" placeholder="Button" v-model="lbButton"></b-form-input>
-        <b-input-group-text slot="append">
-          <strong v-text="(maxButton - lbButton.length)"></strong>
-        </b-input-group-text>
-      </b-input-group>
+          <h3 class="mb-4 mt-5">Settings</h3>
 
-      <label for="buttonLinkInput">Lightbox Button Link</label>
-      <b-form-input class="mb-4" id="buttonLinkInput" placeholder="Button Link" v-model="lbButtonLink"></b-form-input>
+          <p>What date(s) should the lightbox run?</p>
+          <date-picker class="mb-4" v-model="dateRange" type="datetime" lang="en" format="YYYY-MM-DD hh:mm:ss a" range confirm :time-picker-options="{ start: '00:00', step: '00:15', end: '23:45' }"/>
 
-      <form enctype="multipart/form-data" novalidate v-if="isInitial || isSaving">
-        <p>Choose An Image 
-          <br />
-          <small>Your image should be 500px x 480px, or that aspect ratio</small>
-        </p>
-        <div class="dropbox mb-4">
-          <input type="file" :disabled="isSaving" accept="image/*" class="input-file" @change="filesChange">
-            <p v-if="isInitial">
-              Drag your file(s) here to begin<br> or click to browse
+          <!-- Cookie -->
+          <p>Display the lightbox once every 24 hours?</p>
+          <toggle-button id="toggleCookie" v-model="hasCookie" :labels="{checked: 'Yes', unchecked: 'No'}" />
+
+          <!-- URL -->
+          <p>Should the lightbox show up on the homepage?</p>
+          <toggle-button id="toggleHomepage" v-model="hasHomepage" :value="false" :labels="{checked: 'Yes', unchecked: 'No'}" />
+
+          <p>Does the lightbox need to show up on any other page(s)?</p>
+          <toggle-button id="toggleURL" v-model="hasMoreUrls" @change="isActive = !isActive" :value="false" :labels="{checked: 'Yes', unchecked: 'No'}" />
+          <label for="inlineFormInputName6" v-show="isActive">Please list the URL's where the lightbox should be displayed <br /><small>Separate each URL with a comma</small></label>
+          <b-form-input class="mb-4" id="inlineFormInputName6" v-show="isActive" @change="displayUrls()" v-model="listOfURLs"></b-form-input>
+
+          <h3 class="mb-4 mt-5">Visuals</h3>
+
+          <b-form-group id="exampleInputGroup1" label="Do you need a title?" label-for="toggleTitle">
+            <toggle-button id="toggleTitle" @change="disabled = !disabled" :value="false" :labels="{checked: 'Yes', unchecked: 'No'}" />
+            <label class="sr-only" for="inlineFormInputName2">Lightbox Title</label>
+            <b-input-group class="mb-4">
+              <b-form-input :maxlength="maxTitle" id="inlineFormInputName2" placeholder="Title" v-model="lbTitle" :disabled="disabled"></b-form-input>
+              <b-input-group-text slot="append">
+                <strong v-text="(maxTitle - lbTitle.length)"></strong>
+              </b-input-group-text>
+            </b-input-group>
+          </b-form-group>
+          
+          <label for="inlineFormInputName4">Lightbox Text</label>
+          <editor class="mb-4" id="d1" apiKey="7mefmhm1bfkj5sx0crxyumykdlr70kon0ckpylqzxcyi87iv" v-model="lbText" :init="init"></editor>
+          
+          <label class="mt-4" for="inlineFormInputName5">Lightbox Button</label>
+          <b-input-group class="mb-4">
+            <b-form-input :maxlength="maxButton" id="inlineFormInputName5" placeholder="Button" v-model="lbButton"></b-form-input>
+            <b-input-group-text slot="append">
+              <strong v-text="(maxButton - lbButton.length)"></strong>
+            </b-input-group-text>
+          </b-input-group>
+
+          <label for="buttonLinkInput">Lightbox Button Link</label>
+          <b-form-input class="mb-4" id="buttonLinkInput" placeholder="Button Link" v-model="lbButtonLink"></b-form-input>
+
+          <form enctype="multipart/form-data" novalidate v-if="isInitial || isSaving">
+            <p>Choose An Image 
+              <br />
+              <small>Your image should be 500px x 480px, or that aspect ratio</small>
             </p>
-            <p v-if="isSaving">
-              Uploading {{ fileCount }} files...
+            <div class="dropbox mb-4">
+              <input type="file" :disabled="isSaving" accept="image/*" class="input-file" @change="filesChange">
+                <p v-if="isInitial">
+                  Drag your file(s) here to begin<br> or click to browse
+                </p>
+                <p v-if="isSaving">
+                  Uploading {{ fileCount }} files...
+                </p>
+            </div>
+          </form>
+
+          <!--SUCCESS-->
+          <div v-if="isSuccess">
+            <p>Uploaded image successfully.</p>
+            <p>
+              <a href="javascript:void(0)" @click="reset()">Upload again</a>
             </p>
-        </div>
-      </form>
+          </div>
+          <!--FAILED-->
+          <div v-if="isFailed">
+            <p>Uploaded failed.</p>
+            <p>
+              <a href="javascript:void(0)" @click="reset()">Try again</a>
+            </p>
+            <pre>{{ uploadError }}</pre>
+          </div>
 
-      <!--SUCCESS-->
-      <div v-if="isSuccess">
-        <p>Uploaded image successfully.</p>
-        <p>
-          <a href="javascript:void(0)" @click="reset()">Upload again</a>
-        </p>
+          
+
+        </b-form>
+        <b-col class="col-md-4">
+          <div class="confirmation" v-show="hasSettings">
+            <h5>Confirm Your Lightbox Settings</h5>
+            <p v-show="hasDateRange"><strong>You want the lightbox to start running on:</strong> <br /> {{ displayDate(dateRange[0]) }}</p>
+            <p v-show="hasDateRange"><strong>And you want the lightbox to stop running on:</strong> <br /> {{ displayDate(dateRange[1]) }}</p>
+            <p v-show="hasCookie"><strong>Once every 24 hours?:</strong> {{ hasCookie ? 'Yes' : 'No' }}</p>
+            <p v-show="hasHomepage"><strong>Display on the homepage?:</strong> {{ hasHomepage ? 'Yes' : 'No' }}</p>
+            <div v-show="hasMoreUrls"><p><strong>List of URLs:</strong></p> <ul class="list-of-urls"></ul></div>
+            <b-button type="submit" variant="primary" @click="collectInfo()">Submit</b-button>
+          </div>
+        </b-col>
       </div>
-      <!--FAILED-->
-      <div v-if="isFailed">
-        <p>Uploaded failed.</p>
-        <p>
-          <a href="javascript:void(0)" @click="reset()">Try again</a>
-        </p>
-        <pre>{{ uploadError }}</pre>
-      </div>
-
-      <h3 class="mb-4 mt-5">Lightbox Settings</h3>
-
-      <p>What date(s) should the lightbox run?</p>
-      <date-picker class="mb-4" v-model="dateRange" type="datetime" lang="en" format="YYYY-MM-DD hh:mm:ss a" range confirm :time-picker-options="{ start: '00:00', step: '00:15', end: '23:45' }"/>
-
-      <!-- Cookie -->
-      <p>Does the lightbox need a cookie?</p>
-      <toggle-button id="toggleCookie" v-model="hasCookie" :labels="{checked: 'Yes', unchecked: 'No'}" />
-
-      <!-- URL -->
-      <p>Should the lightbox show up on the homepage?</p>
-      <toggle-button id="toggleHomepage" :value="false" :labels="{checked: 'Yes', unchecked: 'No'}" />
-
-      <p>Does the lightbox need to show up on any other page(s)?</p>
-      <toggle-button id="toggleURL" @change="isActive = !isActive" :value="false" :labels="{checked: 'Yes', unchecked: 'No'}" />
-      <label class="sr-only" for="inlineFormInputName6">URL</label>
-      <b-form-input class="mb-4" id="inlineFormInputName6" placeholder="URL" v-show="isActive"></b-form-input>
-
-    </b-form>
-    <b-col class="col-md-4">
-      <div class="confirmation" v-show="hasSettings">
-        <h5>Confirm Your Lightbox Settings</h5>
-        <p v-show="hasDateRange"><strong>You want the lightbox to start running on:</strong> <br /> {{ displayDate(dateRange[0]) }}</p>
-        <p v-show="hasDateRange"><strong>And you want the lightbox to stop running on:</strong> <br /> {{ displayDate(dateRange[1]) }}</p>
-        <p v-show="hasCookie"><strong>Should a cookie be set?:</strong> {{ hasCookie ? 'Yes' : 'No' }}</p>
-        <b-button type="submit" variant="primary">Submit</b-button>
-      </div>
-    </b-col>
+    </div>
     <LightBox :title="disabled? '' : lbTitle" :cta="lbCTA" :text="lbText" :button="lbButton" :buttonLink="lbButtonLink" :imageUrl="imageUrl" />
   </div>
 </template>
@@ -117,6 +128,7 @@ export default {
       lbText: '',
       lbButton: '',
       lbButtonLink: '',
+      listOfURLs: '',
       disabled: true,
       uploadedFiles: [],
       uploadError: null,
@@ -131,6 +143,8 @@ export default {
       printStartDate: '',
       printEndDate: '',
       hasCookie: false,
+      hasHomepage: false,
+      hasMoreUrls: false,
       init: {
         plugins: [
           'advlist autolink lists link image charmap print preview anchor textcolor wordcount',
@@ -140,7 +154,8 @@ export default {
         menubar: false,
         toolbar1: 'undo redo | code | bold italic strikethrough | forecolor backcolor | link | bullist numlist | removeformat',
         branding: false
-      }
+      },
+      sendableInfo: {},
     }
   },
   computed: {
@@ -157,7 +172,7 @@ export default {
       return this.currentStatus === STATUS_FAILED;
     },
     hasSettings() {
-      return this.hasDateRange || this.hasCookie;
+      return this.hasDateRange || this.hasCookie || this.hasHomepage || this.hasMoreUrls;
     },
     hasDateRange() {
       return this.dateRange[0] && this.dateRange[1];
@@ -193,8 +208,29 @@ export default {
       reader.readAsDataURL(image);
     },
     displayDate: function(date) {
-      return moment(date).format("dddd, MMMM Do YYYY, h:mm a");
+      return moment(date).format("dddd, MMMM D, YYYY" + " @" + " h:mm a");
     },
+    displayUrls() {
+      if (this.listOfURLs != null) {
+
+        let list = document.querySelector('.list-of-urls');
+        let z = this.listOfURLs.split(",");
+
+        for (let i = 0; i < z.length; i++) {
+          let listItem = document.createElement('li');
+          listItem.innerHTML = z[i];
+          list.appendChild(listItem);
+        }
+      }
+    },
+    collectInfo() {
+      this.sendableInfo.dates = this.dateRange;
+      this.sendableInfo.cookie = this.hasCookie;
+      this.sendableInfo.homepage = this.hasHomepage;
+      this.sendableInfo.urls = this.listOfURLs;
+      console.log(this.sendableInfo);
+      
+    }
   },
   mounted() {
     this.reset();
@@ -204,10 +240,15 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style lang="scss" scoped>
-h1 {
-  position: sticky;
-}
-.dropbox {
+
+  .formContainer {
+    background: #f0eded;
+    // border: 1px solid #ddd;
+    padding-bottom: 20px;
+    padding-top: 20px;
+  }
+
+  .dropbox {
     outline: 2px dashed grey; /* the dash box */
     outline-offset: -10px;
     background: lightcyan;
@@ -241,6 +282,14 @@ h1 {
     color: #000;
     padding: 20px;
     position: relative;
+  }
+
+  label {
+    display: block;
+  }
+
+  .confirmation p {
+    margin: 0;
   }
 
   @media (min-width: 768px) {

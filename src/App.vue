@@ -1,6 +1,5 @@
 <template>
-  <div id="app" class="container">
-    <h1>Lightbox Builder</h1>
+  <div id="app">
     <BasicForm />
   </div>
 </template>
@@ -23,6 +22,6 @@ export default {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   color: #2c3e50;
-  margin-top: 60px;
+  margin-top: 0;
 }
 </style>
