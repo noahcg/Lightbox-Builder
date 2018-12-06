@@ -93,7 +93,7 @@
             <p v-show="hasCookie"><strong>Once every 24 hours?:</strong> {{ hasCookie ? 'Yes' : 'No' }}</p>
             <p v-show="hasHomepage"><strong>Display on the homepage?:</strong> {{ hasHomepage ? 'Yes' : 'No' }}</p>
             <div v-show="hasMoreUrls"><p><strong>List of URLs:</strong></p> <ul class="list-of-urls"></ul></div>
-            <b-button type="submit" variant="primary" @click="collectInfo()">Submit</b-button>
+            <b-button class="mt-4" type="submit" variant="primary" @click="collectInfo()">Submit</b-button>
           </div>
         </b-col>
       </div>
@@ -242,8 +242,8 @@ export default {
 <style lang="scss" scoped>
 
   .formContainer {
-    background: #f0eded;
-    // border: 1px solid #ddd;
+    background: darken(rgba(230, 119, 0, .75), 10%);
+    color: #fff;
     padding-bottom: 20px;
     padding-top: 20px;
   }
@@ -278,8 +278,8 @@ export default {
   }
 
   .confirmation {
-    background: #ccc;
-    color: #000;
+    background: darken(rgba(230, 119, 0, .75), 10%);
+    color: #fff;
     padding: 20px;
     position: relative;
   }

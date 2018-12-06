@@ -29,7 +29,7 @@ export default {
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
   #giving-tuesday.overlay {
-  background:#000;
+  /* background:#000; */
   top: 0;
   bottom: 0;
   left: 0;
