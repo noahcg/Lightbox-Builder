@@ -86,14 +86,15 @@
 
         </b-form>
         <b-col class="col-md-4">
-          <div class="confirmation" v-show="hasSettings">
-            <h5>Confirm Your Lightbox Settings</h5>
-            <p v-show="hasDateRange"><strong>You want the lightbox to start running on:</strong> <br /> {{ displayDate(dateRange[0]) }}</p>
-            <p v-show="hasDateRange"><strong>And you want the lightbox to stop running on:</strong> <br /> {{ displayDate(dateRange[1]) }}</p>
-            <p v-show="hasCookie"><strong>Once every 24 hours?:</strong> {{ hasCookie ? 'Yes' : 'No' }}</p>
-            <p v-show="hasHomepage"><strong>Display on the homepage?:</strong> {{ hasHomepage ? 'Yes' : 'No' }}</p>
+          <div class="confirmation" >
+            <h5 class="font-weight-bold">Confirm Your Lightbox Settings</h5>
+            <p v-show="!hasSettings">When selected, your settings will appear here.</p>
+            <p v-show="hasDateRange"><strong>You want the lightbox to start running on:</strong> <br /> <span class="mb-2 d-block">{{ displayDate(dateRange[0]) }}</span></p>
+            <p v-show="hasDateRange"><strong>And you want the lightbox to stop running on:</strong> <br /> <span class="mb-2 d-block">{{ displayDate(dateRange[1]) }}</span></p>
+            <p v-show="hasCookie" class="mb-2"><strong>Once every 24 hours?:</strong> {{ hasCookie ? 'Yes' : 'No' }}</p>
+            <p v-show="hasHomepage" class="mb-2"><strong>Display on the homepage?:</strong> {{ hasHomepage ? 'Yes' : 'No' }}</p>
             <div v-show="hasMoreUrls"><p><strong>List of URLs:</strong></p> <ul class="list-of-urls"></ul></div>
-            <b-button class="mt-4" type="submit" variant="primary" @click="collectInfo()">Submit</b-button>
+            <b-button v-show="hasSettings" class="mt-4 w-100" type="submit" variant="primary" @click="collectInfo()">Build Your Lightbox</b-button>
           </div>
         </b-col>
       </div>
@@ -241,8 +242,13 @@ export default {
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style lang="scss" scoped>
 
+  .container:first-of-type {
+    margin-bottom: 200px;
+  }
+
   .formContainer {
-    background: darken(rgba(230, 119, 0, .75), 10%);
+    background: darken(rgba(230, 119, 0, .85), 10%);
+    // background: url('/images/bg_pattern.png') repeat 0 0;
     color: #fff;
     padding-bottom: 20px;
     padding-top: 20px;
@@ -278,7 +284,8 @@ export default {
   }
 
   .confirmation {
-    background: darken(rgba(230, 119, 0, .75), 10%);
+    background: darken(rgba(230, 119, 0, .85), 10%);
+    // background: url('/images/bg_pattern.png') repeat 0 0;
     color: #fff;
     padding: 20px;
     position: relative;
@@ -292,11 +299,21 @@ export default {
     margin: 0;
   }
 
+  button[type="submit"] {
+    background: mediumpurple;
+    border: 1px solid mediumpurple;
+
+    &:hover {
+      background: darken(mediumpurple, 15%);
+      border: 1px solid darken(mediumpurple, 15%);
+    }
+  }
+
   @media (min-width: 768px) {
    .confirmation {
       position: -webkit-sticky;
       position: sticky;
-      top: 20px;
+      top: 30px;
     } 
   }
 </style>
