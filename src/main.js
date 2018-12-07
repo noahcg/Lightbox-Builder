@@ -1,17 +1,17 @@
-import Vue from 'vue'
-import BootstrapVue from 'bootstrap-vue'
-import 'bootstrap/dist/css/bootstrap.css'
-import 'bootstrap-vue/dist/bootstrap-vue.css'
-import App from './App.vue'
-import ToggleButton from 'vue-js-toggle-button'
+import Vue from "vue";
+import BootstrapVue from "bootstrap-vue";
+import "bootstrap/dist/css/bootstrap.css";
+import "bootstrap-vue/dist/bootstrap-vue.css";
+import App from "./App.vue";
+import router from "./router";
+import ToggleButton from "vue-js-toggle-button";
+
+Vue.config.productionTip = false;
 
 Vue.use(ToggleButton);
 Vue.use(BootstrapVue);
 
-Vue.config.productionTip = false;
-
-export const serverBus = new Vue();
-
 new Vue({
-  render: h => h(App),
-}).$mount('#app')
+  router,
+  render: h => h(App)
+}).$mount("#app");

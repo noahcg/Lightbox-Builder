@@ -2,20 +2,20 @@
   <div>
     <div class="container">
       <div class="row">
-        <b-form class="col-md-6 formContainer form-signin mx-auto">
+        <div class="col-md-6 formContainer form-signin mx-auto">
           <h1>Lightbox Builder</h1>
           <h2 class="mb-3 font-weight-normal">Please sign in</h2>
           <label for="inputEmail" class="sr-only">Email address</label>
-          <input type="email" id="inputEmail" class="form-control" placeholder="Email address" required autofocus>
+          <input type="email" id="inputEmail" class="form-control" name="email" v-model="input.email" placeholder="Email address" required autofocus>
           <label for="inputPassword" class="sr-only">Password</label>
-          <input type="password" id="inputPassword" class="form-control" placeholder="Password" required>
+          <input type="password" id="inputPassword" class="form-control" name="password" placeholder="Password" v-model="input.password" required>
           <div class="checkbox mb-3">
             <label>
               <input type="checkbox" value="remember-me"> Remember me
             </label>
           </div>
-          <button class="btn btn-lg btn-primary btn-block" type="submit">Sign in</button>
-        </b-form>
+          <button class="btn btn-lg btn-primary btn-block" @click="login()">Sign in</button>
+        </div>
       </div>
     </div>
   </div>
@@ -26,8 +26,27 @@
 export default {
   name: 'Login',
   data() {    
-    return {}
+    return {
+      input: {
+        email: "",
+        password: ""
+      }
+    }
   },
+  methods: {
+    login() {
+      if(this.input.email != "" && this.input.password != "") {
+        if(this.input.email == this.$parent.$parent.mockAccount.email && this.input.password == this.$parent.$parent.mockAccount.password) {
+          this.$emit("authenticated", true);
+          this.$router.replace({ name: "dashboard" });
+        } else {
+          console.log("The email and / or password is incorrect");
+        }
+      } else {
+        console.log("An email and password must be present");
+      }
+    }
+  }
 }
 </script>
 

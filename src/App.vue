@@ -1,28 +1,38 @@
 <template>
   <div id="app">
-    <!-- <Login /> -->
-    <Dashboard />
-    <!-- <BasicForm /> -->
+    <router-view @authenticated="setAuthenticated" />
   </div>
 </template>
 
 <script>
-import Login from './components/Login.vue'
-import Dashboard from './components/Dashboard.vue'
-import BasicForm from './components/BasicForm.vue'
-
-
-export default {
-  name: 'app',
-  components: {
-    BasicForm,
-    Login,
-    Dashboard
+  export default {
+    name: 'App',
+    data() {
+      return {
+        authenticated: false,
+        mockAccount: {
+          email: "user@ushmm.org",
+          password: "password"
+        }
+      }
+    },
+    mounted() {
+      if(!this.authenticated) {
+        this.$router.replace({ name: "login" });
+      }
+    },
+    methods: {
+      setAuthenticated(status) {
+        this.authenticated = status;
+      },
+      logout() {
+        this.authenticated = false;
+      }
+    }
   }
-}
 </script>
 
-<style>
+<style lang="scss">
 #app {
   background: url('/images/ushmm_background.jpg') no-repeat 0 0;
   background-attachment: fixed;
