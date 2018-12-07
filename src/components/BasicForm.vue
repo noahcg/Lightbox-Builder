@@ -21,7 +21,7 @@
           <p>Does the lightbox need to show up on any other page(s)?</p>
           <toggle-button id="toggleURL" v-model="hasMoreUrls" @change="isActive = !isActive" :value="false" :labels="{checked: 'Yes', unchecked: 'No'}" />
           <label for="inlineFormInputName6" v-show="isActive">Please list the URL's where the lightbox should be displayed <br /><small>Separate each URL with a comma</small></label>
-          <b-form-input class="mb-4" id="inlineFormInputName6" v-show="isActive" @change="displayUrls()" v-model="listOfURLs"></b-form-input>
+          <b-form-input class="mb-4" id="inlineFormInputName6" v-show="isActive" v-model="listOfURLs"></b-form-input>
 
           <h3 class="mb-4 mt-5">Visuals</h3>
 
@@ -93,7 +93,13 @@
             <p v-show="hasDateRange"><strong>And you want the lightbox to stop running on:</strong> <br /> <span class="mb-2 d-block">{{ displayDate(dateRange[1]) }}</span></p>
             <p v-show="hasCookie" class="mb-2"><strong>Once every 24 hours?:</strong> {{ hasCookie ? 'Yes' : 'No' }}</p>
             <p v-show="hasHomepage" class="mb-2"><strong>Display on the homepage?:</strong> {{ hasHomepage ? 'Yes' : 'No' }}</p>
-            <div v-show="hasMoreUrls"><p><strong>List of URLs:</strong></p> <ul class="list-of-urls"></ul></div>
+            <div v-show="hasMoreUrls" v-if="arrayOfUrls.length > 0"><p><strong>List of URLs:</strong></p>
+              <ul class="list-of-urls" ref="urlOutput">
+                <li v-for="url in arrayOfUrls" :key="url">
+                  {{ url }}
+                </li>
+              </ul>
+            </div>
             <b-button v-show="hasSettings" class="mt-4 w-100" type="submit" variant="primary" @click="collectInfo()">Build Your Lightbox</b-button>
           </div>
         </b-col>
@@ -178,6 +184,11 @@ export default {
     hasDateRange() {
       return this.dateRange[0] && this.dateRange[1];
     },
+    arrayOfUrls() {
+      return this.listOfURLs.split(',').map((value) => {
+        return value.trim();
+      }).filter(value => value.length > 0);
+    }
   },
   methods: {
     reset() {
@@ -213,8 +224,6 @@ export default {
     },
     displayUrls() {
       if (this.listOfURLs != null) {
-
-        let list = document.querySelector('.list-of-urls');
         let z = this.listOfURLs.split(",");
 
         for (let i = 0; i < z.length; i++) {
@@ -228,9 +237,12 @@ export default {
       this.sendableInfo.dates = this.dateRange;
       this.sendableInfo.cookie = this.hasCookie;
       this.sendableInfo.homepage = this.hasHomepage;
-      this.sendableInfo.urls = this.listOfURLs;
-      console.log(this.sendableInfo);
-      
+      this.sendableInfo.urls = this.arrayOfUrls;
+      let formData = new FormData;
+      formData.append('dates', this.dateRange);
+      formData.append('cookie', this.hasCookie);
+      formData.append('homepage', this.hasHomepage);
+      formData.append('urls', this.arrayOfUrls);
     }
   },
   mounted() {
@@ -247,9 +259,8 @@ export default {
   }
 
   .formContainer {
-    background: darken(rgba(230, 119, 0, .85), 10%);
-    // background: url('/images/bg_pattern.png') repeat 0 0;
-    color: #fff;
+    background: #EEEEEE;
+    // color: #fff;
     padding-bottom: 20px;
     padding-top: 20px;
   }
@@ -284,9 +295,7 @@ export default {
   }
 
   .confirmation {
-    background: darken(rgba(230, 119, 0, .85), 10%);
-    // background: url('/images/bg_pattern.png') repeat 0 0;
-    color: #fff;
+    background: #EEEEEE;
     padding: 20px;
     position: relative;
   }
@@ -297,16 +306,6 @@ export default {
 
   .confirmation p {
     margin: 0;
-  }
-
-  button[type="submit"] {
-    background: mediumpurple;
-    border: 1px solid mediumpurple;
-
-    &:hover {
-      background: darken(mediumpurple, 15%);
-      border: 1px solid darken(mediumpurple, 15%);
-    }
   }
 
   @media (min-width: 768px) {

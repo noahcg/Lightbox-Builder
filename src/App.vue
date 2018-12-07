@@ -1,17 +1,23 @@
 <template>
   <div id="app">
-    <BasicForm />
+    <!-- <Login /> -->
+    <Dashboard />
+    <!-- <BasicForm /> -->
   </div>
 </template>
 
 <script>
+import Login from './components/Login.vue'
+import Dashboard from './components/Dashboard.vue'
 import BasicForm from './components/BasicForm.vue'
 
 
 export default {
   name: 'app',
   components: {
-    BasicForm
+    BasicForm,
+    Login,
+    Dashboard
   }
 }
 </script>
@@ -26,5 +32,6 @@ export default {
   color: #2c3e50;
   margin-top: 0;
   padding: 30px 0;
+  min-height: 100vh;
 }
 </style>
